@@ -7,7 +7,7 @@ todo:
 - [x] comment whats what
 - [ ] deploy this config to bare metal
 - [ ] expose over local network
-- [ ] set up local dns for nice urls
+- [ ] set up local dns for nice urls (PiHole!)
 - [ ] VPN entire thing (god help me)
 - [ ] sort of failover 
 
