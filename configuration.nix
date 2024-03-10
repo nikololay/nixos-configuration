@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
 { config, lib, pkgs, ... }:
 
 {
@@ -14,44 +10,14 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # TODO this on bare metal
   networking.hostName = "nixos"; # Define your hostname.
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+
+  # TODO definitely fix this
+  networking.firewall.enable = false;
 
   # Set your time zone.
   time.timeZone = "Europe/London";
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
-
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
-  # Configure keymap in X11
-  # services.xserver.xkb.layout = "us";
-  # services.xserver.xkb.options = "eurosign:e,caps:escape";
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
-  # sound.enable = true;
-  # hardware.pulseaudio.enable = true;
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  users.groups.multimedia = { };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nik = {
@@ -59,6 +25,7 @@
     extraGroups = [ "wheel" "multimedia" ]; 
   };
 
+  # get vim and configure it to not be fugly
   environment.systemPackages = with pkgs; [
     ((vim_configurable.override { }).customize{
       name = "vim";
@@ -75,20 +42,18 @@
     git
   ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  # create mutltimedia group so services can write each other's data
+  users.groups.multimedia = { };
 
+  # put all the multimedia here
+  # TODO fix this to make jellyfin dash look good 
   systemd.tmpfiles.rules = [
     "d /data/media 0770 - multimedia - -"
   ];
   
   services= {
     openssh.enable = true;
+    # TODO expore if this can be declarative
     jellyfin = {
       enable = true;
       group = "multimedia";
@@ -98,6 +63,8 @@
     bazarr = {enable = true; group = "multimedia"; };
     readarr = {enable = true; group = "multimedia"; };
     prowlarr = {enable = true; };
+
+    # this is declarative - nice
     deluge = {
       enable = true;
       group = "multimedia";
@@ -116,11 +83,6 @@
     };
   };
 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  networking.firewall.enable = false;
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
